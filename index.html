@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resolução: Cinemática - Grupo Phi</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Configuração Phi -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        phiYellow: '#EBEB2F',
+                        phiBlack: '#000000',
+                        phiWhite: '#FFFFFF',
+                        phiCardBase: '#0A0A0A',
+                        phiCardSec: '#111111',
+                        phiCardStep: '#1A1A1A',
+                    },
+                    fontFamily: {
+                        futura: ['Jost', 'sans-serif'],
+                        pacifico: ['Pacifico', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    
+    <!-- MathJax -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        body {
+            background-color: #000000;
+            color: #FFFFFF;
+            font-family: 'Jost', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        
+        .logo-phi {
+            font-family: 'Pacifico', cursive;
+            color: #EBEB2F;
+        }
+
+        .btn-phi {
+            background-color: #EBEB2F;
+            color: #000000;
+            transition: all 0.3s ease;
+        }
+
+        .btn-phi:hover {
+            background-color: #FFFFFF;
+            transform: scale(1.02);
+        }
+
+        /* Resolução Container */
+        #resolucao {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        #resolucao.visible {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Passos Individuais */
+        .step-item {
+            display: none;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .step-item.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        canvas {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-8 px-4 sm:py-12 sm:px-8">
+
+    <!-- Cabeçalho -->
+    <header class="w-full max-w-5xl flex flex-col sm:flex-row justify-between items-center sm:items-end mb-10 border-b border-gray-800 pb-4 gap-4 text-center sm:text-left">
+        <div>
+            <p class="text-gray-400 text-sm tracking-widest uppercase mb-1">Física • Cinemática</p>
+            <h1 class="text-3xl sm:text-4xl font-bold">Encontro de Móveis</h1>
+        </div>
+        <div class="text-4xl logo-phi">
+            Grupo Phi
+        </div>
+    </header>
+
+    <main class="w-full max-w-5xl flex flex-col items-center">
+        
+        <!-- Bloco do Enunciado Original -->
+        <div class="w-full bg-phiCardSec border border-gray-800 rounded-3xl p-6 sm:p-8 mb-8 shadow-xl">
+            <span class="text-xs uppercase tracking-widest text-phiYellow font-bold mb-2 block">Questão 4</span>
+            <p class="text-lg sm:text-xl text-gray-200 leading-relaxed font-medium">
+                Determine o tempo necessário para que os móveis da figura a seguir se encontrem.
+            </p>
+        </div>
+
+        <!-- Bloco de Simulação -->
+        <div class="w-full bg-phiCardBase border border-gray-800 rounded-3xl p-4 sm:p-8 mb-10 shadow-2xl">
+            <h2 class="text-xl text-gray-400 mb-6 font-semibold uppercase tracking-wider text-center">Simulação do Problema</h2>
+            <canvas id="animCanvas" width="1200" height="420" class="rounded-xl"></canvas>
+            
+            <div class="mt-8 flex justify-center">
+                <button id="btnAnimar" class="btn-phi font-bold py-4 px-12 text-lg rounded-full uppercase tracking-widest shadow-[0_0_20px_rgba(235,235,47,0.3)]">
+                    Iniciar Simulação
+                </button>
+            </div>
+        </div>
+
+        <!-- Bloco de Resolução Passo a Passo Interativo -->
+        <section id="resolucao" class="w-full bg-phiCardSec border border-gray-800 rounded-3xl p-6 sm:p-12 mb-12 shadow-2xl">
+            <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
+                <h2 class="text-2xl sm:text-3xl font-bold text-phiYellow uppercase tracking-wide">Resolução Passo a Passo</h2>
+                <span id="contadorPassos" class="text-sm font-semibold text-gray-400 bg-black/40 px-4 py-2 rounded-full border border-gray-800">Passo 1 de 5</span>
+            </div>
+            
+            <div class="space-y-6 text-lg sm:text-xl mb-8">
+                
+                <!-- Passo 1 -->
+                <div id="passo-1" class="step-item show bg-phiCardStep border border-gray-700 rounded-2xl p-6 sm:p-8">
+                    <div class="flex items-center gap-4 mb-4">
+                        <span class="bg-phiYellow text-black font-bold rounded-full w-8 h-8 flex items-center justify-center">1</span>
+                        <p class="text-gray-300 font-semibold">Equação horária do corpo A (parte do km 0):</p>
+                    </div>
+                    <div class="overflow-x-auto pb-2">
+                        \[S_A = S_{0A} + v_A \cdot t \implies S_A = 0 + 30t\]
+                    </div>
+                </div>
+
+                <!-- Passo 2 -->
+                <div id="passo-2" class="step-item bg-phiCardStep border border-gray-700 rounded-2xl p-6 sm:p-8">
+                    <div class="flex items-center gap-4 mb-4">
+                        <span class="bg-phiYellow text-black font-bold rounded-full w-8 h-8 flex items-center justify-center">2</span>
+                        <p class="text-gray-300 font-semibold">Equação horária do corpo B (parte do km 400, sentido oposto):</p>
+                    </div>
+                    <div class="overflow-x-auto pb-2">
+                        \[S_B = S_{0B} - v_B \cdot t \implies S_B = 400 - 50t\]
+                    </div>
+                </div>
+
+                <!-- Passo 3 -->
+                <div id="passo-3" class="step-item bg-phiCardStep border border-gray-700 rounded-2xl p-6 sm:p-8">
+                    <div class="flex items-center gap-4 mb-4">
+                        <span class="bg-phiYellow text-black font-bold rounded-full w-8 h-8 flex items-center justify-center">3</span>
+                        <p class="text-gray-300 font-semibold">No momento do encontro, as posições são iguais (\(S_A = S_B\)):</p>
+                    </div>
+                    <div class="overflow-x-auto pb-2">
+                        \[30t = 400 - 50t\]
+                        \[30t + 50t = 400\]
+                        \[80t = 400 \implies \mathbf{t = 5 \text{ h}}\]
+                    </div>
+                </div>
+
+                <!-- Passo 4 -->
+                <div id="passo-4" class="step-item bg-phiCardStep border border-gray-700 rounded-2xl p-6 sm:p-8">
+                    <div class="flex items-center gap-4 mb-4">
+                        <span class="bg-phiYellow text-black font-bold rounded-full w-8 h-8 flex items-center justify-center">4</span>
+                        <p class="text-gray-300 font-semibold">Posição exata do encontro (substituindo o tempo na eq. de A):</p>
+                    </div>
+                    <div class="overflow-x-auto pb-2">
+                        \[S_A = 30 \cdot (5)\]
+                        \[\mathbf{S_A = 150 \text{ km}}\]
+                    </div>
+                </div>
+
+                <!-- Passo 5 (Resposta Final) -->
+                <div id="passo-5" class="step-item bg-black/60 border border-gray-700 rounded-2xl p-6 sm:p-8">
+                    <div class="flex items-center gap-4 mb-4">
+                        <span class="bg-phiYellow text-black font-bold rounded-full w-8 h-8 flex items-center justify-center">5</span>
+                        <p class="text-white font-bold uppercase tracking-wider">Resposta Final</p>
+                    </div>
+                    <div class="text-center sm:text-left pt-2">
+                        <div class="text-2xl sm:text-3xl font-bold text-phiYellow mb-2">\[t = 5 \text{ horas}\]</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-phiYellow">\[S = 150 \text{ km}\]</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Botão de Avançar Passo -->
+            <div class="flex justify-end">
+                <button id="btnProximoPasso" class="btn-phi font-bold py-3 px-8 text-base rounded-xl uppercase tracking-wider flex items-center gap-2">
+                    <span>Próximo Passo</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Rodapé e Redes Sociais -->
+    <footer class="w-full max-w-5xl mt-10 mb-8 border-t border-gray-800 pt-8 flex flex-col items-center">
+        <h3 class="text-xl font-bold mb-6">Aprenda connosco</h3>
+        
+        <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-4">
+            <!-- Link Instagram -->
+            <a href="https://instagram.com/grupofiaulas" target="_blank" rel="noopener noreferrer" 
+               class="flex items-center justify-center gap-3 bg-[#111] border border-gray-700 hover:border-phiYellow hover:text-phiYellow transition-colors rounded-xl py-4 px-8 w-full sm:w-64">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd" /></svg>
+                <span class="font-bold text-lg tracking-wide">Instagram</span>
+            </a>
+            
+            <!-- Link WhatsApp -->
+            <a href="https://wa.me/5521969000321" target="_blank" rel="noopener noreferrer" 
+               class="flex items-center justify-center gap-3 bg-[#111] border border-gray-700 hover:border-green-500 hover:text-green-500 transition-colors rounded-xl py-4 px-8 w-full sm:w-64">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 0C5.385 0 0 5.385 0 12.031c0 2.12.553 4.186 1.6 6.008L.02 24l6.113-1.559c1.761.943 3.75 1.442 5.898 1.442 6.646 0 12.031-5.385 12.031-12.031S18.677 0 12.031 0zm3.627 16.942c-.524 1.474-2.527 2.05-3.528 2.09-.924.037-2.17-.183-4.57-1.183-2.885-1.2-4.73-4.144-4.872-4.333-.141-.188-1.162-1.545-1.162-2.943 0-1.398.724-2.083.982-2.366.257-.282.564-.352.75-.352.188 0 .376.002.54.01.176.007.418-.066.654.502.247.595.845 2.062.922 2.215.076.153.125.334.03.523-.094.188-.142.305-.282.47-.142.164-.298.352-.423.493-.142.153-.292.32-.128.604.164.282.728 1.205 1.564 1.956 1.08.971 1.986 1.272 2.269 1.413.282.141.446.117.616-.076.17-.194.728-.847.922-1.14.194-.293.388-.246.646-.153.257.094 1.63.766 1.912.907.282.141.47.235.54.364.072.129.072.752-.452 2.226z"/></svg>
+                <span class="font-bold text-lg tracking-wide">WhatsApp</span>
+            </a>
+        </div>
+        
+        <p class="mt-10 text-gray-600 text-sm">&copy; 2026 Grupo Phi - Educação Descomplicada</p>
+    </footer>
+
+    <!-- Lógica JavaScript -->
+    <script>
+        const canvas = document.getElementById('animCanvas');
+        const ctx = canvas.getContext('2d');
+        const btnAnimar = document.getElementById('btnAnimar');
+        const resolucao = document.getElementById('resolucao');
+        const btnProximoPasso = document.getElementById('btnProximoPasso');
+        const contadorPassos = document.getElementById('contadorPassos');
+        
+        let passoAtual = 1;
+        const totalPassos = 5;
+
+        btnProximoPasso.addEventListener('click', () => {
+            if (passoAtual < totalPassos) {
+                passoAtual++;
+                const proximoEl = document.getElementById(`passo-${passoAtual}`);
+                if (proximoEl) {
+                    proximoEl.classList.add('show');
+                    // Re-renderiza o MathJax para garantir que as fórmulas apareçam certas ao abrir
+                    if (window.MathJax) {
+                        MathJax.typesetPromise([proximoEl]);
+                    }
+                }
+                contadorPassos.innerText = `Passo ${passoAtual} de ${totalPassos}`;
+                
+                if (passoAtual === totalPassos) {
+                    btnProximoPasso.innerText = "Concluído 🎉";
+                    btnProximoPasso.disabled = true;
+                    btnProximoPasso.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            }
+        });
+
+        // Configurações da Simulação
+        const larguraPista = 900;
+        const margemEsq = 150;
+        const distReal = 400; 
+        const escala = larguraPista / distReal; 
+        
+        const yEixo = 230; 
+        const raioCarro = 24; 
+        
+        let animando = false;
+        let tempoDecorrido = 0;
+        let requestID;
+
+        const vA = 30;
+        const vB = 50;
+        const tempoEncontro = distReal / (vA + vB);
+        const fatorVelocidade = 0.02; 
+
+        function desenharCenario() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.beginPath();
+            ctx.moveTo(margemEsq - 50, yEixo);
+            ctx.lineTo(margemEsq + larguraPista + 50, yEixo);
+            ctx.strokeStyle = '#555';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            ctx.fillStyle = '#FFF';
+            ctx.font = '24px Jost, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('0 km', margemEsq, yEixo + 50);
+            ctx.fillText('400 km', margemEsq + larguraPista, yEixo + 50);
+        }
+
+        function desenharMovel(x, cor, rotulo, direcao) {
+            ctx.beginPath();
+            ctx.arc(x, yEixo - raioCarro, raioCarro, 0, Math.PI * 2);
+            ctx.fillStyle = cor;
+            ctx.fill();
+
+            // Rótulo de velocidade bem posicionado para evitar sobreposição
+            ctx.fillStyle = '#FFF';
+            ctx.font = 'bold 24px Jost, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(rotulo, x, yEixo - 75);
+
+            // Seta de direção
+            ctx.beginPath();
+            const compSeta = 45;
+            const ySeta = yEixo - raioCarro;
+            if (direcao > 0) {
+                ctx.moveTo(x + raioCarro + 8, ySeta);
+                ctx.lineTo(x + raioCarro + compSeta, ySeta);
+                ctx.lineTo(x + raioCarro + compSeta - 10, ySeta - 8);
+                ctx.moveTo(x + raioCarro + compSeta, ySeta);
+                ctx.lineTo(x + raioCarro + compSeta - 10, ySeta + 8);
+            } else {
+                ctx.moveTo(x - raioCarro - 8, ySeta);
+                ctx.lineTo(x - raioCarro - compSeta, ySeta);
+                ctx.lineTo(x - raioCarro - compSeta + 10, ySeta - 8);
+                ctx.moveTo(x - raioCarro - compSeta, ySeta);
+                ctx.lineTo(x - raioCarro - compSeta + 10, ySeta + 8);
+            }
+            ctx.strokeStyle = cor;
+            ctx.lineWidth = 4;
+            ctx.stroke();
+        }
+
+        function animar() {
+            desenharCenario();
+
+            tempoDecorrido += fatorVelocidade;
+            if (tempoDecorrido > tempoEncontro) {
+                tempoDecorrido = tempoEncontro;
+            }
+
+            let posA_km = vA * tempoDecorrido;
+            let posB_km = distReal - (vB * tempoDecorrido);
+            let posA_px = margemEsq + (posA_km * escala);
+            let posB_px = margemEsq + (posB_km * escala);
+
+            desenharMovel(posA_px, '#EBEB2F', '30 km/h', 1);
+            desenharMovel(posB_px, '#FFFFFF', '50 km/h', -1);
+
+            // Relógio central no topo do canvas sem sobrepor trajetórias
+            ctx.fillStyle = '#FFF';
+            ctx.font = 'bold 28px Jost, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Tempo: ${tempoDecorrido.toFixed(1)} h`, canvas.width / 2, 45);
+
+            if (tempoDecorrido < tempoEncontro) {
+                requestID = requestAnimationFrame(animar);
+            } else {
+                animando = false;
+                btnAnimar.innerText = "Reiniciar Simulação";
+                btnAnimar.disabled = false;
+                
+                // Marcação de encontro detalhada
+                ctx.beginPath();
+                ctx.arc(posA_px, yEixo, 10, 0, Math.PI * 2);
+                ctx.fillStyle = '#EBEB2F';
+                ctx.fill();
+                ctx.font = 'bold 22px Jost, sans-serif';
+                ctx.fillStyle = '#EBEB2F';
+                ctx.fillText(`Ponto de Encontro (150 km)`, posA_px, yEixo + 90);
+
+                // Exibe o painel de resolução
+                resolucao.classList.add('visible');
+                if (window.MathJax) {
+                    MathJax.typesetPromise();
+                }
+            }
+        }
+
+        desenharCenario();
+        desenharMovel(margemEsq, '#EBEB2F', '30 km/h', 1);
+        desenharMovel(margemEsq + larguraPista, '#FFFFFF', '50 km/h', -1);
+
+        btnAnimar.addEventListener('click', () => {
+            if (animando) return;
+            
+            tempoDecorrido = 0;
+            animando = true;
+            btnAnimar.innerText = "A calcular...";
+            btnAnimar.disabled = true;
+            
+            // Reseta o passo a passo para o estado inicial
+            resolucao.classList.remove('visible');
+            passoAtual = 1;
+            contadorPassos.innerText = `Passo 1 de ${totalPassos}`;
+            btnProximoPasso.innerText = "Próximo Passo";
+            btnProximoPasso.disabled = false;
+            btnProximoPasso.classList.remove('opacity-50', 'cursor-not-allowed');
+            
+            document.querySelectorAll('.step-item').forEach((el, idx) => {
+                if (idx === 0) el.classList.add('show');
+                else el.classList.remove('show');
+            });
+            
+            cancelAnimationFrame(requestID);
+            animar();
+        });
+    </script>
+</body>
+</html>
